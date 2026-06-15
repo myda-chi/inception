@@ -4,7 +4,7 @@ set -e
 
 until mysqladmin ping \
     -h mariadb \
-    -P 3311 \
+    -P 3306 \
     -u "${MYSQL_USER}" \
     -p"${MYSQL_PASSWORD}" \
     --silent
@@ -27,7 +27,7 @@ if [ ! -f "/var/www/html/wp-config.php" ]; then
         --dbname="${MYSQL_DATABASE}" \
         --dbuser="${MYSQL_USER}" \
         --dbpass="${MYSQL_PASSWORD}" \
-        --dbhost="mariadb:3311"
+        --dbhost="mariadb:3306"
 
     wp core install \
         --allow-root \
@@ -38,6 +38,8 @@ if [ ! -f "/var/www/html/wp-config.php" ]; then
         --admin_password="${WP_ADMIN_PASSWORD}" \
         --admin_email="${WP_ADMIN_EMAIL}" \
         --skip-email
+
+    sed -i "s|<?php|<?php\n\$_SERVER['HTTPS'] = 'on';\n\$_SERVER['SERVER_PORT'] = '${WP_PORT}' ?: '443';|" /var/www/html/wp-config.php
 
     wp user create \
         "${WP_USER}" \
