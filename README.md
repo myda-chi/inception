@@ -112,9 +112,5 @@ make
 Claude AI (Anthropic) was used throughout this project for the following tasks:
 
 - **Understanding Docker concepts** — explaining images, containers, volumes, networks, and how they interact
-- **Dockerfile writing** — learning best practices such as avoiding `tail -f`, using `exec` form for CMD, and running processes in the foreground
-- **NGINX configuration** — setting up TLS, FastCGI pass to PHP-FPM, and understanding `fastcgi_params`
-- **MariaDB initialization** — writing the `init_db.sh` script to create the database and user on first run
 - **WordPress automation** — using WP-CLI to install and configure WordPress non-interactively via `init_wp.sh`
 - **Debugging** — diagnosing 403, 502, and redirect loop errors by analyzing container logs
-- **Documentation** — structuring and writing this README, USER_DOC.md, and DEV_DOC.md
