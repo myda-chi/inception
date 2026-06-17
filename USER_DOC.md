@@ -1,138 +1,96 @@
 # User Documentation
 
-## Overview
+This document explains how to use the Inception stack as an end user or administrator — no development knowledge required.
 
-This project deploys a complete WordPress website using Docker Compose.
+## What services does this stack provide?
 
-The stack contains the following services:
+The stack is made of three services working together to run a WordPress website:
 
-* Nginx: Web server and reverse proxy.
-* WordPress: PHP application used to manage website content.
-* MariaDB: Database server used by WordPress.
-* Docker Volumes: Persistent storage for WordPress files and database data.
+| Service | Role |
+|---------|------|
+| **NGINX** | The only entry point to the site. Handles HTTPS (TLSv1.2/TLSv1.3) on port 443 and forwards requests to WordPress. |
+| **WordPress + PHP-FPM** | Runs the WordPress application and generates the pages you see in the browser. |
+| **MariaDB** | Stores all WordPress data — posts, pages, users, settings — in a database. |
 
----
+You only ever interact with the site through NGINX; WordPress and MariaDB are not directly reachable from outside the stack.
 
-## Starting the Project
+## Starting the project
 
-Build and start all services:
-
+From the root of the repository, run:
 ```bash
 make
 ```
 
-or
+This builds the Docker images (if needed) and starts all three containers in the background.
 
-```bash
-make up
-```
+## Stopping the project
 
-Verify that containers are running:
-
-```bash
-docker ps
-```
-
----
-
-## Stopping the Project
-
-Stop all containers:
-
+To stop the containers without deleting any data:
 ```bash
 make down
 ```
 
-Stop and remove containers, networks, and volumes:
+To stop the containers **and** delete the stored data (database + website files):
+```bash
+make clean
+```
 
+To remove everything, including built Docker images:
 ```bash
 make fclean
 ```
 
----
+## Accessing the website
 
-## Accessing the Website
-
-Open a browser and navigate to:
-
-```text
-https://<domain-name>
+Open a browser and go to:
 ```
-
-Example:
-
-```text
 https://myda-chi.42.fr
 ```
 
----
+Your browser will warn you about the certificate because it is self-signed. This is expected — click **Advanced** → **Accept the risk and continue** (the exact wording depends on your browser).
 
-## Accessing the WordPress Administration Panel
+## Accessing the administration panel
 
-Open:
-
-```text
-https://<domain-name>/wp-admin
+Go to:
+```
+https://myda-chi.42.fr/wp-admin
 ```
 
-Login using the administrator credentials configured during installation.
+Log in using the administrator credentials defined in the `.env` file (see below).
 
----
+## Locating and managing credentials
 
-## Credentials
+All credentials are defined in the `srcs/.env` file at the root of the `srcs/` folder. This file contains:
 
-Credentials are stored in environment variables and Docker secrets.
+- Database name, user, and passwords (`MYSQL_*`)
+- WordPress admin username, password, and email (`WP_ADMIN_*`)
+- A second WordPress user (`WP_USER*`)
+- The site domain name (`DOMAIN_NAME`)
 
-Common credentials include:
-
-* WordPress administrator account
-* WordPress database user
-* MariaDB root user
-
-Configuration files are located in:
-
-```text
-srcs/.env
-```
-
-or
-
-```text
-srcs/secrets/
-```
-
-depending on the project implementation.
-
-Never share these credentials publicly.
-
----
-
-## Checking Service Status
-
-List running containers:
-
+This file is never committed to git (it is listed in `.gitignore`) to keep credentials private. If you need to change a password, edit `srcs/.env`, then rebuild the project from a clean state:
 ```bash
-docker ps
+make fclean
+sudo rm -rf ~/data/html/*
+sudo rm -rf ~/data/mariadb/*
+make
 ```
 
-View logs:
+This is necessary because WordPress and MariaDB only read these values the first time they initialize.
 
+## Checking that services are running correctly
+
+To see the status of all containers:
 ```bash
-docker logs nginx
-docker logs wordpress
-docker logs mariadb
+docker compose -f srcs/docker-compose.yml ps
 ```
 
-Check container health:
+All three services (`nginx`, `wordpress`, `mariadb`) should show a status of **Up**.
 
+To check the logs of a specific service if something looks wrong:
 ```bash
-docker compose ps
+docker compose -f srcs/docker-compose.yml logs nginx
+docker compose -f srcs/docker-compose.yml logs wordpress
+docker compose -f srcs/docker-compose.yml logs mariadb
 ```
 
-Expected services:
-
-* nginx
-* wordpress
-* mariadb
-
-All services should be in the "running" state.
+If a container keeps restarting, the logs will usually show the exact error near the bottom of the output.
