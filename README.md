@@ -111,6 +111,6 @@ make
 
 Claude AI (Anthropic) was used throughout this project for the following tasks:
 
-- **Understanding Docker concepts** — explaining images, containers, volumes, networks, and how they interact
-- **WordPress automation** — using WP-CLI to install and configure WordPress non-interactively via `init_wp.sh`
+- **Understanding Docker concepts** — explaining images, containers, volumes, networks, and how they interact,and the overall project structure work before starting
 - **Debugging** — diagnosing 403, 502, and redirect loop errors by analyzing container logs
+- **Mdfiles** -help write this README and the USER_DOC.md / DEV_DOC.md files, as it was also my first time writing this kind of documentation
