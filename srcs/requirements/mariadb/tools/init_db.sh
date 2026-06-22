@@ -2,11 +2,12 @@
 
 set -e
 
-mysql_install_db --user=mysql --datadir=/var/lib/mysql
+MYSQL_PASSWORD=$(cat /run/secrets/db_password)
+MYSQL_ROOT_PASSWORD=$(cat /run/secrets/db_root_password)
 
 if [ ! -f "/var/lib/mysql/.initialized" ]; then
 
-    mysqld_safe & 
+    mysqld_safe &
     until mysqladmin ping --silent; do
         sleep 1
     done

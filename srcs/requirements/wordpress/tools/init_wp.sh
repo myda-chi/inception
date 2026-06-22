@@ -2,6 +2,11 @@
 
 set -e
 
+MYSQL_PASSWORD=$(cat /run/secrets/db_password)
+WP_ADMIN_PASSWORD=$(sed -n '1p' /run/secrets/credentials)
+WP_USER_PASSWORD=$(sed -n '2p' /run/secrets/credentials)
+
+
 until mysqladmin ping \
     -h mariadb \
     -P 3306 \
